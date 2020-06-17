@@ -6,7 +6,7 @@ services:
   - docker
 
 script:
-  - INSPACY_HOME=$(pwd) python -m unittest
+  - cd inspacy && python -m unittest
   - docker build -t inseefrlab/inspacy .
 
 deploy:
