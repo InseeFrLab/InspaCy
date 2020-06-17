@@ -1,16 +1,12 @@
 from flask import Flask, request, render_template, Markup
 from flask_cors import CORS
 from pipeline import Pipeline
+from configuration import cfg
 
-import os
-import configparser
 
 
 app = Flask(__name__)
 CORS(app)
-
-cfg = configparser.ConfigParser()
-cfg.read(os.environ['INSPACY_HOME'] + '/inspacy/static/config.ini')
 
 pipeline = Pipeline(cfg)
 
