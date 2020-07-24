@@ -1,6 +1,6 @@
 import spacy
 from spacy.tokens import Span
-
+import re
 
 class RuleBuilder:
     """Build rule for Entity Ruler based on concept's label, id and a rule level (strict, common or permis)"""
@@ -18,7 +18,8 @@ class RuleBuilder:
         self.lvlfunc = {
             'strict': self.build_strict_rule,
             'common': self.build_common_rule,
-            'permis': self.build_permis_rule
+            'permis': self.build_permis_rule,
+            'regexp': self.build_regexp_rule
         }
         self.sent = __class__.LANGSENT[self.lang]
 
@@ -30,6 +31,8 @@ class RuleBuilder:
         rules = []
         for ne in nes:
             func = self.lvlfunc[ne['level']]
+            rules.append(func(ne))
+            func = self.lvlfunc['regexp']
             rules.append(func(ne))
         return rules
 
@@ -64,9 +67,20 @@ class RuleBuilder:
 
         wdps = []
         for token in doc[1:len(doc) - self.sent['size']]:
-            wdps.append({"pos": token.pos_, "lemma": token.lemma_})
+            if token.pos_ in {"NOUN","PROPN"}:
+                wdps.append({"pos": {"IN" : ["NOUN" ,"PROPN"]}, "lemma": token.lemma_})
+            else:
+                wdps.append({"pos": token.pos_, "lemma": token.lemma_})
             wdps.append(__class__.OPTADJ)
         pattern = wdps
+        return {"id": id_, "label": label, "pattern": pattern}
+
+    def build_regexp_rule(self, ne):
+        """Build a rule matching regular expression."""
+        id_ = ne['id']
+        label = ne['label']
+        p = re.compile('\s*\([a-zA-Z0-9_\s]*\)')
+        pattern=p.sub('', ne['entity'])
         return {"id": id_, "label": label, "pattern": pattern}
 
     def get_pipeline(self):
