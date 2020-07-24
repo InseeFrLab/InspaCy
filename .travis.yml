@@ -7,7 +7,7 @@ services:
 
 script:
   - python -m spacy download fr_core_news_md
-  - cd inspacy && python -m unittest
+  - python -m unittest
   - docker build -t inseefrlab/inspacy .
 
 deploy:
