@@ -2,4 +2,3 @@ spacy
 flask
 flask-Cors
 requests
-re
