@@ -6,7 +6,10 @@ services:
   - docker
 
 script:
-  - docker build -t inseefrlab/inspacy .
+  - python -m spacy download fr_core_news_md
+  - export INSPACY_HOME=$(pwd)
+  - cd inspacy && python -m unittest
+  - cd $INSPACY_HOME && docker build -t inseefrlab/inspacy .
 
 deploy:
   skip_cleanup: true
